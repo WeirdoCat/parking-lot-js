@@ -4,7 +4,7 @@ function main(parkingLot) {
     
     checkin.addEventListener('click', () => {
         try {
-            const licensePlate = prompt('Nummerplade?');
+            const licensePlate = prompt(desc+' Nummerplade? ');
             if (licensePlate) {
                 parkingLot.checkin(licensePlate);
             }
