@@ -1,18 +1,21 @@
 function openGate(gate) {
     gate.classList.add('open');
-    setTimeout(() => gate.classList.remove('open'), 5000);
+    setTimeout(() => gate.classList.remove('open'), 5000); 
 }
 
 class ParkingLot {
-    constructor(calculatePriceFn, desc) {
-        this.calculatePriceFn = calculatePriceFn;
-        this.desc = desc;
-    }
-
     checkedInCars = {};
 
     entranceGate = document.getElementById('entrance-gate');
     exitGate = document.getElementById('exit-gate');
+
+    constructor(priceStrategy) {
+        this.priceStrategy = priceStrategy;
+    }
+
+    getDescription() {
+        return this.priceStrategy.getDescription();
+    }
 
     checkin(licensePlate) {
         if (this.checkedInCars[licensePlate] != undefined) {
@@ -21,7 +24,6 @@ class ParkingLot {
             this.checkedInCars[licensePlate] = new Date();
             openGate(this.entranceGate);
         }
-
     }
 
     checkout(licensePlate) {
@@ -31,17 +33,14 @@ class ParkingLot {
         } else {
             const checkoutTime = new Date();
 
-            let delay = 0;
-            let quarterprice = 0;
-            const price = this.calculatePriceFn(checkoutTime, checkinTime);
-
+            const price = this.priceStrategy.calculatePrice(checkinTime, checkoutTime);
             this.checkedInCars[licensePlate] = price;
             return this.checkedInCars[licensePlate];
         }
     }
 
     pay(licensePlate, amount) {
-        if (typeof (this.checkedInCars[licensePlate]) != 'number') {
+        if (typeof(this.checkedInCars[licensePlate]) != 'number') {
             throw new Error(`${licensePlate} er ikke ved at betale!`);
         } else {
             this.checkedInCars[licensePlate] -= amount;
